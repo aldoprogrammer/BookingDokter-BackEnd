@@ -10,6 +10,8 @@ export const updateDoctor = async (req, res) => {
             { $set: req.body},
             { new: true }
         )
+        console.log(updatedDoctor);
+
 
         res
             .status(200)
@@ -19,6 +21,7 @@ export const updateDoctor = async (req, res) => {
                  data: updatedDoctor
             })
     } catch (err) {
+        console.log(err);
         res.status(500).json({status: false, message: 'failed to update Doctor'})
     }
 }
@@ -49,24 +52,26 @@ export const deleteDoctor = async (req, res) => {
 }
 
 export const getSingleDoctor = async (req, res) => {
-    const id = req.params.id
+    const id = req.params.id;
 
     try {
-        const doctor = await Doctor.findById(
-            id,
-        ).select("-password")
+        const doctor = await Doctor.findById(id).select("-password");
 
-        res
-            .status(200)
-            .json({
-                 success: true,
-                 message: 'Doctor Found',
-                 data: doctor
-            })
+        // Log the doctor and its reviews
+        console.log('Doctor:', doctor);
+
+        res.status(200).json({
+            success: true,
+            message: 'Doctor Found',
+            data: doctor,
+        });
     } catch (err) {
-        res.status(404).json({status: false, message: 'no Doctor found'})
+        // Log any errors
+        console.error('Error in getSingleDoctor:', err);
+        res.status(404).json({ status: false, message: 'No Doctor found' });
     }
-}
+};
+
 
 export const getAllDoctor = async (req, res) => {
 

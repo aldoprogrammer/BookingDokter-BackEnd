@@ -1,16 +1,14 @@
-import Review from '../models/ReviewSchema.js'
-import Doctor from '../models/DoctorSchema.js'
+import Review from '../models/ReviewSchema.js';
+import Doctor from '../models/DoctorSchema.js';
 
-export const getAllReviews = async () => {
+export const getAllReviews = async (req, res) => {
     try {
-        const reviews = await Review.find({})
-
-        res.status(200).json({status: true, message: 'Successfull', data: reviews})
+        const reviews = await Review.find({});
+        res.status(200).json({ success: true, message: 'Successful', data: reviews });
     } catch (err) {
-        res.status(404).json({status: false, message: 'Not found'})
+        res.status(404).json({ success: false, message: 'Internal Server Error' });
     }
-}
-
+};
 
 export const createReview = async (req, res) => {
     if (!req.body.doctor) req.body.doctor = req.params.doctorId;
@@ -21,14 +19,23 @@ export const createReview = async (req, res) => {
     try {
         const savedReview = await newReview.save();
 
+        // Log the saved review
+        console.log('Saved Review:', savedReview);
+
         await Doctor.findByIdAndUpdate(req.body.doctor, {
             $push: {
-                reviews: savedReview._id
-            }
-        })
+                reviews: savedReview._id,
+            },
+        });
 
-        res.status(200).json({success: true, message: 'Successfull', data: savedReview})
+        res.status(200).json({
+            success: true,
+            message: 'Review Successfully Submitted',
+            data: savedReview,
+        });
     } catch (err) {
-        res.status(500).json({success:false, message: err.message})
+        // Log any errors
+        console.error('Error in createReview:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
-}
+};

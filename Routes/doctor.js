@@ -4,7 +4,7 @@ import { authenticate, restrict } from '../auth/verifyToken.js';
 import reviewRoute from './review.js'
 
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true});
 
 // nested routes
 router.use("/:doctorId/reviews", reviewRoute)
