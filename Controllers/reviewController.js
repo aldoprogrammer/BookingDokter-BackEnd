@@ -19,9 +19,6 @@ export const createReview = async (req, res) => {
     try {
         const savedReview = await newReview.save();
 
-        // Log the saved review
-        console.log('Saved Review:', savedReview);
-
         await Doctor.findByIdAndUpdate(req.body.doctor, {
             $push: {
                 reviews: savedReview._id,
@@ -34,8 +31,6 @@ export const createReview = async (req, res) => {
             data: savedReview,
         });
     } catch (err) {
-        // Log any errors
-        console.error('Error in createReview:', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: err.message });
     }
 };
