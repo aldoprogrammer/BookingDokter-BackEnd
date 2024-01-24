@@ -55,7 +55,9 @@ export const getSingleDoctor = async (req, res) => {
     const id = req.params.id;
 
     try {
-        const doctor = await Doctor.findById(id).select("-password");
+        const doctor = await Doctor.findById(id)
+        .populate("reviews")
+        .select("-password");
 
         // Log the doctor and its reviews
         console.log('Doctor:', doctor);
