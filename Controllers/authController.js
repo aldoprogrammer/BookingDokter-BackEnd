@@ -26,7 +26,7 @@ export const register = async (req, res) => {
 
     if (user) {
       return res.status(400).json({
-        message: 'User already exists',
+        message: 'User with that email already exists',
       });
     }
 
@@ -45,7 +45,7 @@ export const register = async (req, res) => {
     }
 
     if (role === 'doctor') {
-      user = new User({
+      user = new Doctor({
         name,
         email,
         password: hashpassword,
