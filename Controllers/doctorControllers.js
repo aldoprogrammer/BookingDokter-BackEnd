@@ -59,17 +59,13 @@ export const getSingleDoctor = async (req, res) => {
         .populate("reviews")
         .select("-password");
 
-        // Log the doctor and its reviews
-        console.log('Doctor:', doctor);
-
         res.status(200).json({
             success: true,
             message: 'Doctor Found',
             data: doctor,
         });
     } catch (err) {
-        // Log any errors
-        console.error('Error in getSingleDoctor:', err);
+        
         res.status(404).json({ status: false, message: 'No Doctor found' });
     }
 };
