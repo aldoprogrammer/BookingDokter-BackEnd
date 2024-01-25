@@ -1,3 +1,4 @@
+import Booking from "../models/BookingSchema.js";
 import Doctor from "../models/DoctorSchema.js"
 
 
@@ -105,5 +106,36 @@ export const getAllDoctor = async (req, res) => {
                 status: false, 
                 message: 'no found'
             })
+    }
+}
+
+export const getDoctorProfile = async (req, res) => {
+    const doctorId = req.userId;
+
+    try {
+        const doctor = await Doctor.findById(doctorId)
+
+        if(!doctor) {
+            return res.status(404).json({
+                status: false, 
+                message: 'no doctor found'
+            })
+        }
+
+        const { password, ...rest} = doctor.doc;
+        const appointments = await Booking.find({doctor: doctorId })
+
+        res
+         .status(200)
+         .json({
+                status: true,
+                message: 'Profile info is getting',
+                data: {...rest, appointments}
+            })
+    } catch (err) {
+        res.status(500).json({
+            status: false, 
+            message: 'something went wrong'
+        })
     }
 }
