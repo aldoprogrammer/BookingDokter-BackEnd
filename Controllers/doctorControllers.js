@@ -122,7 +122,7 @@ export const getDoctorProfile = async (req, res) => {
             })
         }
 
-        const { password, ...rest} = doctor.doc;
+        const { password, ...rest} = doctor.toObject();
         const appointments = await Booking.find({doctor: doctorId })
 
         res
