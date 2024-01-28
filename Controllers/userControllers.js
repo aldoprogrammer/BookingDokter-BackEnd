@@ -96,31 +96,32 @@ export const getUserProfile = async (req, res) => {
     const userId = req.userId;
 
     try {
-        const user = await User.findById(userId)
+        const user = await User.findById(userId);
 
-        if(!user) {
+        if (!user) {
             return res.status(404).json({
-                status: false, 
-                message: 'no user found'
-            })
+                success: false,
+                message: 'No user found',
+            });
         }
 
-        const { password, ...rest} = user.doc;
+        const { password, ...rest } = user.toObject(); // Use toObject() to convert the Mongoose document to a plain JavaScript object.
 
-        res
-         .status(200)
-         .json({
-                status: true,
-                message: 'Profile info is getting',
-                data: {rest}
-            })
+        res.status(200).json({
+            success: true,
+            message: 'Profile info is getting',
+            data: { ...rest },
+        });
     } catch (err) {
+        console.error('Error in getUserProfile:', err);
         res.status(500).json({
-            status: false, 
-            message: 'something went wrong'
-        })
+            success: false,
+            message: 'Something went wrong',
+        });
     }
-}
+};
+
+
 
 export const getMyAppointments = async (req, res) => {
     try {
