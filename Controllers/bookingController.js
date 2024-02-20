@@ -4,18 +4,35 @@ import Booking from '../models/BookingSchema.js'
 import Stripe from 'stripe'
 
 export const getCheckoutSession = async (req, res) => {
-    
     try {
-        const doctor = await Doctor.findById(req.params.doctorId);
-        const user = await User.findById(req.userId);
+    
+        // Ensure user is authenticated
+        if (!req.userId) {
+            return res.status(401).json({
+                success: false,
+                message: 'Unauthorized access. User not authenticated.',
+            });
+        }
 
-        if (!doctor || isNaN(doctor.ticketPrice)) {
-            throw new Error('Invalid doctor or ticket price');
+        const doctor = await Doctor.findById(req.params.doctorId);
+        if (!doctor) {
+            return res.status(404).json({
+                success: false,
+                message: 'Doctor not found.',
+            });
+        }
+
+        const user = await User.findById(req.userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found.',
+            });
         }
 
         const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-        session = await stripe.checkout.sessions.create({
+        const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'payment',
             success_url: `${process.env.CLIENT_SITE_URL}/checkout-success`,
@@ -25,12 +42,12 @@ export const getCheckoutSession = async (req, res) => {
             line_items: [
                 {
                     price_data: {
-                        currency: 'bdt',
+                        currency: 'usd',
                         unit_amount: doctor.ticketPrice * 100, 
                         product_data: {
-                            name:doctor.name,
-                            description:doctor.bio,
-                            images:[doctor.photo]
+                            name: doctor.name,
+                            description: doctor.bio,
+                            images: [doctor.photo]
                         }
                     },
                     quantity: 1
@@ -39,10 +56,10 @@ export const getCheckoutSession = async (req, res) => {
         });
 
         const booking = new Booking({
-            doctor:doctor._id,
-            user:user._id,
-            ticketPrice:doctor.ticketPrice,
-            session:session.id
+            doctor: doctor._id,
+            user: user._id,
+            ticketPrice: doctor.ticketPrice,
+            session: session.id
         });
 
         await booking.save();
@@ -57,7 +74,6 @@ export const getCheckoutSession = async (req, res) => {
         res.status(500).json({
             success: false,
             message: err.message,
-            
         });
     }
 }
