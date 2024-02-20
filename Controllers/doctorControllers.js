@@ -11,7 +11,7 @@ export const updateDoctor = async (req, res) => {
             { $set: req.body},
             { new: true }
         )
-        console.log(updatedDoctor);
+        // console.log(updatedDoctor);
 
 
         res
